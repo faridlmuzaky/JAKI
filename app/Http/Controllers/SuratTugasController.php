@@ -24,8 +24,7 @@ class SuratTugasController extends Controller
      */
     public function index(request $request)
     {
-        //
-        // return view('st.index', (['cuti' => $cuti]));
+        
         $tanggal = $request->input('tanggal');
 
         $query = DB::table('surat_tugas');
@@ -34,7 +33,20 @@ class SuratTugasController extends Controller
                   ->where('tgl_akhir', '>=', $tanggal);
         }
         $data = $query->orderBy('id','desc')->get();
-        // $data = SuratTugas::all()->sortByDesc('id'); // Pengurutan di level Collection
+
+         foreach ($data as $item) {
+            $pegawai = DB::table('surat_tugas_pegawai')
+                ->join('pegawai', 'pegawai.nip', '=', 'surat_tugas_pegawai.pegawai_id')
+                ->where('surat_tugas_id', $item->id)
+                ->pluck('jabatan');
+
+            $jabatan_plh = ['Ketua Pengadilan', 'Wakil Ketua Pengadilan', 'Panitera', 'Sekretaris'];
+
+            $item->plh = $pegawai->contains(function ($jabatan) use ($jabatan_plh) {
+                return in_array($jabatan, $jabatan_plh);
+            });
+        }
+     
         return view('st.index', ([
             'data' => $data,
             'tanggal' => $tanggal

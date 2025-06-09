@@ -24,6 +24,19 @@
         background-color: #f1f1f1;
     }
 </style>
+<style>
+    .plh-badge {
+        background: linear-gradient(to right, #ffc107, #ff9800);
+        color: #fff;
+        font-weight: bold;
+        box-shadow: 0 0 6px rgba(255, 193, 7, 0.5);
+        transition: transform 0.2s ease;
+    }
+
+    .plh-badge:hover {
+        transform: scale(1.05);
+    }
+</style>
 <div class="content-body">
     {{-- <div class="container pd-x-0 pd-lg-x-10 pd-xl-x-0"> --}}
       <div class="d-sm-flex align-items-center justify-content-between mg-b-20 mg-lg-b-30">
@@ -87,9 +100,18 @@
                   <tr>
                     <td>{{$loop->iteration}}</td>
                     <td>
-                        <button type="button" class="btn btn-success btn-icon btn-pegawai" data-id="{{ $item->id }}" id="btn-pegawai">
-                          <i data-feather="users"> </i>
+                        <button type="button" class="btn btn-success btn-icon btn-pegawai mb-1" data-id="{{ $item->id }}" id="btn-pegawai">
+                          <i data-feather="users"></i>
                         </button>
+                      @if ($item->plh)
+                        <br>
+                        <span 
+                            class="badge badge-pill badge-warning plh-badge" 
+                            data-toggle="tooltip" 
+                            title="Perlu Penunjukan PLH">
+                            <i class="fas fa-star mr-1"></i> PLH
+                        </span>
+                      @endif
                     </td>
                     <td>{{$item->maksud}}</td>
                     <td>{{$item->instansi_tujuan}}</td>
@@ -533,7 +555,7 @@
     @endif
     </script>
 
-    <script>
+<script>
       //click tombol validasi
    $(document).ready(function(){
         $('#tabel').on('click', '.btn-pegawai', function() {
