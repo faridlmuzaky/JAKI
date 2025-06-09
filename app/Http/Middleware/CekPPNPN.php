@@ -1,0 +1,25 @@
+<?php
+
+namespace App\Http\Middleware;
+
+use Closure;
+use Illuminate\Http\Request;
+
+
+class CekPPNPN
+{
+    /**
+     * Handle an incoming request.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \Closure  $next
+     * @return mixed
+     */
+    public function handle(Request $request, Closure $next, ...$roles)
+    {
+        if (in_array($request->user()->jabatan, $roles)) {
+            return $next($request);
+        }
+        return redirect('/dashboard')->with('error', 'Anda tidak memiliki hak akses untuk menu tersebut');
+    }
+}

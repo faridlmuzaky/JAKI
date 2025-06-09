@@ -1,0 +1,10 @@
+izbel 	-> simpan (status pengajuan awal)
+detail_izbel -> 
+	-> id
+	-> izbel_id
+	-> status
+	-> date_created
+	-> date_update
+
+izbel	-> update (status), check kunci apa tidak
+	-> Perbaikan, lengkap, proses pengajuan ke MA
