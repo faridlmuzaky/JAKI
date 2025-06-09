@@ -34,17 +34,34 @@ class SuratTugasController extends Controller
         }
         $data = $query->orderBy('id','desc')->get();
 
-         foreach ($data as $item) {
+        //  foreach ($data as $item) {
+        //     $pegawai = DB::table('surat_tugas_pegawai')
+        //         ->join('pegawai', 'pegawai.nip', '=', 'surat_tugas_pegawai.pegawai_id')
+        //         ->where('surat_tugas_id', $item->id)
+        //         ->pluck('kelompok_jabatan');
+
+        //     $jabatan_plh = ['Ketua Pengadilan', 'Wakil Ketua Pengadilan', 'Panitera', 'Sekretaris'];
+
+        //     $item->plh = $pegawai->contains(function ($jabatan) use ($jabatan_plh) {
+        //         return in_array($jabatan, $jabatan_plh);
+        //     });
+        // }
+
+        foreach ($data as $item) {
             $pegawai = DB::table('surat_tugas_pegawai')
                 ->join('pegawai', 'pegawai.nip', '=', 'surat_tugas_pegawai.pegawai_id')
                 ->where('surat_tugas_id', $item->id)
-                ->pluck('kelompok_jabatan');
+                ->get();
 
-            $jabatan_plh = ['Ketua Pengadilan', 'Wakil Ketua Pengadilan', 'Panitera', 'Sekretaris'];
+            $jabatanList = $pegawai->pluck('kelompok_jabatan')->map(fn($j) => strtolower(trim($j)))->toArray();
 
-            $item->plh = $pegawai->contains(function ($jabatan) use ($jabatan_plh) {
-                return in_array($jabatan, $jabatan_plh);
-            });
+            $hasKetua = in_array('ketua pengadilan', $jabatanList);
+            $hasWakil = in_array('wakil ketua pengadilan', $jabatanList);
+            $hasPaniteraOnly = in_array('panitera', $jabatanList);
+            $hasSekretarisOnly = in_array('sekretaris', $jabatanList);
+
+            // Kondisi PLH: (Ketua & Wakil) atau Panitera saja atau Sekretaris saja
+            $item->plh = ($hasKetua && $hasWakil) || $hasPaniteraOnly || $hasSekretarisOnly;
         }
      
         return view('st.index', ([
