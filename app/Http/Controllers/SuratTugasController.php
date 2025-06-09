@@ -38,7 +38,7 @@ class SuratTugasController extends Controller
             $pegawai = DB::table('surat_tugas_pegawai')
                 ->join('pegawai', 'pegawai.nip', '=', 'surat_tugas_pegawai.pegawai_id')
                 ->where('surat_tugas_id', $item->id)
-                ->pluck('jabatan');
+                ->pluck('kelompok_jabatan');
 
             $jabatan_plh = ['Ketua Pengadilan', 'Wakil Ketua Pengadilan', 'Panitera', 'Sekretaris'];
 
