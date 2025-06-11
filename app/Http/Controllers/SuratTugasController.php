@@ -524,7 +524,7 @@ class SuratTugasController extends Controller
                         'Wakil Ketua Pengadilan',
                         'Hakim Tinggi',
                         'Sekretaris',
-                        'Panitera'
+                        'Panitera Tingkat Banding'
                     ];
 
                     $tingkat = in_array($item['jabatan'], $jabatanTingkatB) ? 'B' : 'C';
