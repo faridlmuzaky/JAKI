@@ -19,7 +19,23 @@ class PegawaiController extends Controller
     {
         $satker_id = Auth::User()->satker_ma;
         $role = Auth::User()->role;
-        $data = Pegawai::where('id_satker', $satker_id)->where('deleted', 0)->get();
+        // $data = Pegawai::where('id_satker', $satker_id)->where('deleted', 0)->get();
+        $data = Pegawai::where('id_satker', $satker_id)
+            ->where('deleted', 0)
+            ->orderByRaw("
+                CASE 
+                    WHEN kelompok_jabatan = 'Ketua Pengadilan' THEN 1
+                    WHEN kelompok_jabatan = 'Wakil Ketua Pengadilan' THEN 2
+                    WHEN kelompok_jabatan = 'Hakim' THEN 3
+                    WHEN kelompok_jabatan = 'Panitera' THEN 4
+                    WHEN kelompok_jabatan = 'Sekretaris' THEN 5
+                    WHEN kelompok_jabatan = 'Panitera Muda' THEN 6
+                    WHEN kelompok_jabatan = 'Kepala Sub Bagian' THEN 7
+                    WHEN kelompok_jabatan = 'Panitera Pengganti' THEN 8
+                    ELSE 9
+                END
+            ")
+         ->get();
         $satker = SatkerMa::where('id_banding', 520)->where('deleted', 0)->orderBy('nama_satker')->get();
 
         return view('pegawai.index', ([
@@ -34,7 +50,25 @@ class PegawaiController extends Controller
     {
         $satker_id = $request->satker_id;
         $role = Auth::User()->role;
-        $data = Pegawai::where('id_satker', $satker_id)->where('deleted', 0)->get();
+        // $data = Pegawai::where('id_satker', $satker_id)->where('deleted', 0)->get();
+
+        $data = Pegawai::where('id_satker', $satker_id)
+            ->where('deleted', 0)
+            ->orderByRaw("
+                CASE 
+                    WHEN kelompok_jabatan = 'Ketua Pengadilan' THEN 1
+                    WHEN kelompok_jabatan = 'Wakil Ketua Pengadilan' THEN 2
+                    WHEN kelompok_jabatan = 'Hakim' THEN 3
+                    WHEN kelompok_jabatan = 'Panitera' THEN 4
+                    WHEN kelompok_jabatan = 'Sekretaris' THEN 5
+                    WHEN kelompok_jabatan = 'Panitera Muda' THEN 6
+                    WHEN kelompok_jabatan = 'Kepala Sub Bagian' THEN 7
+                    WHEN kelompok_jabatan = 'Panitera Pengganti' THEN 8
+                    ELSE 9
+                END
+            ")
+         ->get();
+
         $satker = SatkerMa::where('id_banding', 520)->where('deleted', 0)->get();
 
         return view('pegawai.index', ([

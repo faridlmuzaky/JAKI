@@ -2,6 +2,19 @@
 @section('title', 'User Management')
 
 @section('content')
+
+<style>
+    #syncSpinner.fade-in {
+        opacity: 1;
+        display: flex;
+    }
+
+    #syncSpinner.fade-out {
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+</style>
+
 <div class="content-body">
     <div class="container pd-x-0 pd-lg-x-10 pd-xl-x-0">
         <div class="d-sm-flex align-items-center justify-content-between mg-b-20 mg-lg-b-30">
@@ -20,6 +33,15 @@
                 <button id="sync-pegawai" class="btn btn-primary">
                     Sinkronisasi Data Pegawai
                 </button>
+                <div id="progressContainer" style="margin-top: 20px; width: 100%; max-width: 500px; display: none;">
+                    <div style="background-color: #f3f3f3; border: 1px solid #ccc; height: 25px; width: 100%; border-radius: 5px;">
+                        <div id="progressBar" style="height: 100%; width: 0%; background-color: #4caf50; text-align: center; color: white; border-radius: 5px;">
+                            0%
+                        </div>
+                    </div>
+                    <div id="progressText" style="margin-top: 10px;"></div>
+                </div>
+
                 <button id="sync-jabatan" class="btn btn-info">
                     Sinkronisasi Data Jabatan
                 </button>
@@ -126,6 +148,24 @@
         </div><!-- container -->
     </div>
 </div><!-- content -->
+<!-- Spinner Area -->
+<!-- Spinner Overlay -->
+<div id="syncSpinner" style="
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    background: rgba(255, 255, 255, 0.9);
+    z-index: 1050;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    transition: opacity 0.3s ease;">
+    <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+        {{-- <span class="visually-hidden">Loading...</span> --}}
+    </div>
+    <div id="syncText" style="margin-top: 1rem; font-weight: 500; color: #333;">Memulai sinkronisasi...</div>
+</div>
 
 <script>
     $('#tabel').dataTable({
@@ -145,6 +185,28 @@
     document.getElementById('sync-pegawai').addEventListener('click', function () {
         const now = new Date();
         const jam = now.toLocaleTimeString(); // default format lokal
+        const spinner = document.getElementById('syncSpinner');
+        const syncText = document.getElementById('syncText');
+
+        // Fungsi untuk tampilkan spinner
+        function showSpinner(message = 'Memulai sinkronisasi...') {
+            spinner.style.display = 'flex';
+            spinner.style.opacity = 1;
+            syncText.textContent = message;
+        }
+
+        // Fungsi untuk sembunyikan spinner
+        function hideSpinner(delay = 2000) {
+            setTimeout(() => {
+                spinner.style.opacity = 0;
+                setTimeout(() => {
+                    spinner.style.display = 'none';
+                }, 300);
+            }, delay);
+        }
+
+        // Tampilkan spinner
+        showSpinner('Proses sinkronisasi data pegawai...');
         console.log("Mulai sync-pegawai: ", jam);
         fetch("{{ url('/api/sync-pegawai') }}", {
             method: "GET",
@@ -159,13 +221,15 @@
             const now = new Date();
             const jam = now.toLocaleTimeString(); // default format lokal
             console.log("Selesai sync-pegawai: ", jam);
+            hideSpinner(2000);
         })
         .catch(error => {
             console.error('Error:', error);
+            hideSpinner(2000);
             const now = new Date();
             const jam = now.toLocaleTimeString(); // default format lokal
             console.log("Error sync-pegawai: ", jam);
-            alert('Gagal melakukan sinkronisasi pegawai');
+            alert('Gagal melakukan sinkronisasi pegawai');        
         });
     });
 
@@ -173,6 +237,28 @@
     document.getElementById('sync-jabatan').addEventListener('click', function () {
         const now = new Date();
         const jam = now.toLocaleTimeString(); // default format lokal
+        const spinner = document.getElementById('syncSpinner');
+        const syncText = document.getElementById('syncText');
+
+                // Fungsi untuk tampilkan spinner
+        function showSpinner(message = 'Memulai sinkronisasi...') {
+            spinner.style.display = 'flex';
+            spinner.style.opacity = 1;
+            syncText.textContent = message;
+        }
+
+        // Fungsi untuk sembunyikan spinner
+        function hideSpinner(delay = 2000) {
+            setTimeout(() => {
+                spinner.style.opacity = 0;
+                setTimeout(() => {
+                    spinner.style.display = 'none';
+                }, 300);
+            }, delay);
+        }
+
+        // Tampilkan spinner
+        showSpinner('Proses sinkronisasi data jabatan...');
         console.log("Mulai sync-jabatan: ", jam);
         fetch("{{ url('/api/sync-jabatan') }}", {
             method: "GET",
@@ -183,6 +269,7 @@
         .then(response => response.json())
         .then(data => {
             // console.log(data.data); // tampilkan pesan sukses/gagal
+            hideSpinner(2000);
             console.log(data.message); // tampilkan pesan sukses/gagal
             const now = new Date();
             const jam = now.toLocaleTimeString(); // default format lokal
@@ -190,6 +277,7 @@
         })
         .catch(error => {
             console.error('Error:', error);
+            hideSpinner(2000);
             const now = new Date();
             const jam = now.toLocaleTimeString(); // default format lokal
             console.log("Error sync-jabatan: ", jam);
@@ -197,31 +285,6 @@
         });
     });
 
-    // document.getElementById('sync-satker').addEventListener('click', function () {
-    //     const now = new Date();
-    //     const jam = now.toLocaleTimeString(); // default format lokal
-    //     console.log("Mulai sync-satker: ", jam);
-    //     fetch("{{ url('/api/sync-satker') }}", {
-    //         method: "GET",
-    //         headers: {
-    //             'Accept': 'application/json'
-    //         }
-    //     })
-    //     .then(response => response.json())
-    //     .then(data => {
-    //         console.log(data.message); // tampilkan pesan sukses/gagal
-    //         const now = new Date();
-    //         const jam = now.toLocaleTimeString(); // default format lokal
-    //         console.log("Selesai sync-satker: ", jam);
-    //     })
-    //     .catch(error => {
-    //         console.error('Error:', error);
-    //         const now = new Date();
-    //         const jam = now.toLocaleTimeString(); // default format lokal
-    //         console.log("Error sync-satker: ", jam);
-    //         alert('Gagal melakukan sinkronisasi satker');
-    //     });
-    // });
 </script>
 
 @endsection
