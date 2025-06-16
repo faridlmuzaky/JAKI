@@ -60,7 +60,7 @@ class MutasiController extends Controller
 
     public function detail_mutasi($jenis, $id) {
         // data mutasi
-        $mutasi = DB::select("SELECT * FROM mutasi WHERE deleted=0 AND jenis=?", [$jenis]);
+        $mutasi = DB::select("SELECT * FROM mutasi WHERE id=? AND deleted=0 AND jenis=?", [$id, $jenis]);
         $tgl_mulai = $mutasi[0]->tgl_mulai;
         $tgl_akhir = $mutasi[0]->tgl_akhir;
         $periode = "Periode Pengajuan " . FormatTanggal::indo($tgl_mulai) . ' - ' . FormatTanggal::indo($tgl_akhir);
