@@ -97,8 +97,9 @@ class MutasiController extends Controller
     }
 
     public function detail_mutasi_pegawai($jenis, $id) {
+        $detail = MutasiDetail::where('id', $id)->first();
         // data mutasi
-        $mutasi = DB::select("SELECT * FROM mutasi WHERE deleted=0 AND jenis=?", [$jenis]);
+        $mutasi = DB::select("SELECT * FROM mutasi WHERE id=? AND deleted=0 AND jenis=?", [$detail->id_mutasi,$jenis]);
         $tgl_mulai = $mutasi[0]->tgl_mulai;
         $tgl_akhir = $mutasi[0]->tgl_akhir;
         $periode = "Periode Pengajuan " . FormatTanggal::indo($tgl_mulai) . ' - ' . FormatTanggal::indo($tgl_akhir);
@@ -108,7 +109,6 @@ class MutasiController extends Controller
         }
 
         // data detail pegawai
-        $detail = MutasiDetail::where('id', $id)->first();
         $query = "SELECT p.*, m.tgl_mulai, m.tgl_akhir FROM mutasi_detail_pegawai p JOIN mutasi_detail d ON d.id=p.id_mutasi_detail
                   JOIN mutasi m ON m.id=d.id_mutasi WHERE p.id_mutasi_detail=? AND p.deleted=0";
         $data = DB::select($query, [$id]);
