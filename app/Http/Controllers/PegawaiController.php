@@ -21,9 +21,9 @@ class PegawaiController extends Controller
         $role = Auth::User()->role;
         // $data = Pegawai::where('id_satker', $satker_id)->where('deleted', 0)->get();
         $data = Pegawai::where('id_satker', $satker_id)
-            ->where('deleted', 0)
+            ->where('deleted', 0)->where('active', 1)
             ->orderByRaw("
-                CASE 
+                CASE
                     WHEN kelompok_jabatan = 'Ketua Pengadilan' THEN 1
                     WHEN kelompok_jabatan = 'Wakil Ketua Pengadilan' THEN 2
                     WHEN kelompok_jabatan = 'Hakim' THEN 3
@@ -55,7 +55,7 @@ class PegawaiController extends Controller
         $data = Pegawai::where('id_satker', $satker_id)
             ->where('deleted', 0)
             ->orderByRaw("
-                CASE 
+                CASE
                     WHEN kelompok_jabatan = 'Ketua Pengadilan' THEN 1
                     WHEN kelompok_jabatan = 'Wakil Ketua Pengadilan' THEN 2
                     WHEN kelompok_jabatan = 'Hakim' THEN 3

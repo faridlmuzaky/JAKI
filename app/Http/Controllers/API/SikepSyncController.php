@@ -23,6 +23,8 @@ class SikepSyncController extends Controller
             $urlTraining = "https://sikep.mahkamahagung.go.id/api-pro/v1/training/pegawai";
             $urlProd = "https://sikep.mahkamahagung.go.id/api-pro/v1/pegawai";
 
+            $allNipFromApi = [];
+
             do {
                 $response = Http::withToken($token)
                     ->get($urlProd, [
@@ -54,9 +56,13 @@ class SikepSyncController extends Controller
                 foreach ($items as $pegawai) {
                     $tanggalLahir = $this->convertDateToEnglishFormat($pegawai['tanggal_lahir']);
                     $tmtPns = $this->convertDateToEnglishFormat($pegawai['tmt_pns']);
+                    $satker = $pegawai['satker'] ?? null;
+                    $satker_ma = $pegawai['id_satker'] ?? null;
+                    $nip = $pegawai['nip'];
+                    $allNipFromApi[] = $nip;
 
                     Pegawai::updateOrCreate(
-                        ['nip' => $pegawai['nip']], // unik
+                        ['nip' => $nip], // unik
                         [
                             'username' => $pegawai['username'] ?? null,
                             'nip_lama' => $pegawai['nip_lama'] ?? null,
@@ -81,8 +87,8 @@ class SikepSyncController extends Controller
                             'kelompok_jabatan' => $pegawai['kelompok_jabatan'] ?? null,
                             'jabatan' => $pegawai['jabatan'] ?? null,
                             'unit_kerja' => $pegawai['unit_kerja'] ?? null,
-                            'id_satker' => $pegawai['id_satker'] ?? null,
-                            'satker' => $pegawai['satker'] ?? null,
+                            'id_satker' => $satker_ma,
+                            'satker' => $satker,
                             'kode_satker' => $pegawai['kode_satker'] ?? null,
                             'kelas_pengadilan' => $pegawai['kelas_pengadilan'] ?? null,
                             'lingkungan_peradilan' => $pegawai['lingkungan_peradilan'] ?? null,
@@ -95,13 +101,21 @@ class SikepSyncController extends Controller
                             'foto_formal' => $pegawai['foto_formal'] ?? null,
                         ]
                     );
+
+                    $user = User::where('username', $nip)->first();
+                    if ($user) {
+                        $user->satker_ma = $satker_ma;
+                        $user->save();
+                    }
                 }
 
                 $page++;
                 sleep(2); // ⏱️ kasih jeda 2 detik antar request
-
             }  while (!empty($items));
-            // }  while ($page < 4);
+            // }  while ($page < 3);
+
+            // Setelah data dari API didapat semua, nonaktifkan pegawai yang tidak ada di API
+            Pegawai::whereNotIn('nip', $allNipFromApi)->update(['active' => 0]);
 
             return response()->json(['message' => 'Berhasil']);
         } catch (\Exception $e) {
