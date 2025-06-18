@@ -20,8 +20,12 @@ class UserController extends Controller
      */
     public function index()
     {
-        $data = Auth::user()->where('deleted', 0)->get();
-        return view('user.index', (['data' => $data]));
+        $query = "SELECT u.*, s.nama_satker FROM users u LEFT JOIN satker s on u.satker_ma=s.id WHERE u.deleted=0";
+        $data = DB::select($sql);
+        // $data = Auth::user()->where('deleted', 0)->get();
+        return view('user.index', ([
+            'data' => $data
+        ]));
     }
 
     public function salin_images_ke_faces() // salin_images_ke_faces

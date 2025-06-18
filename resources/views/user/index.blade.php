@@ -20,7 +20,7 @@
           <a href="{{url('/adduser')}}" class="btn btn-sm pd-x-15 btn-primary btn-uppercase mg-l-5"><i data-feather="plus" class="wd-10 mg-r-5"></i> Add New User</a>
         </div>
       </div>
-      
+
       {{-- Main Content  --}}
       <div class="col-lg-4 col-xl-12 mg-t-10">
         <div class="card">
@@ -32,7 +32,7 @@
             @endif
             <h6 class="mg-b-5">List of Users</h6>
             <p class="tx-12 tx-color-03 mg-b-0">Daftar User Aplikasi Kinerja Kita.</p>
-     
+
           </div><!-- card-header -->
           <div class="table-responsive">
           <div class="card-body pd-20">
@@ -43,48 +43,56 @@
                         <th scope="col">Name</th>
                         <th scope="col">Usename</th>
                         <th scope="col">Jabatan</th>
+                        <th scope="col">Satker</th>
                         <th scope="col">Telepon/WA</th>
-                        <th scope="col">Created at</th>
                         <th scope="col">Action</th>
                     </tr>
                 </thead>
-                @foreach ($data as $item)   
-                    <tr>
-                        <td>{{$loop->iteration}}</td>
-                        <td><a href="/user/{{$item->id}}/profile">{{$item->name}}</a></td>
-                        <td>{{$item->username}}</td>
-                        <td>{{$item->jabatan}}</td>
-                        <td>{{$item->telp}}</td>
-                        <td>{{$item->created_at->isoFormat('D MMMM Y HH:mm:ss')}}</td>
-                        <td>
-                            <div class="dropdown">
-                                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                  <i data-feather="list"></i>
-                                </button>
-                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                  <a class="dropdown-item" href="/user/{{$item->id}}/edit">Edit</a>
-                                  <a class="dropdown-item" href="" data-toggle="modal" data-target="#Modal{{$item->id}}">Delete</a>
-                                </div>
-                              </div>
+                @foreach ($data as $item)
+                <tr>
+                    <td>{{$loop->iteration}}</td>
+                    <td><a href="/user/{{$item->id}}/profile">{{$item->name}}</a></td>
+                    <td>{{$item->username}}</td>
+                    <td>{{$item->jabatan}}</td>
+                    <td>{{$item->nama_satker}}</td>
+                    <td>{{$item->telp}}</td>
+                    {{-- <td>{{$item->created_at->isoFormat('D MMMM Y HH:mm:ss')}}</td> --}}
+                    {{-- <td>{{ \Carbon\Carbon::parse($item->created_at)->isoFormat('D MMMM Y') }}</td> --}}
+                    <td>
+                        <div class="dropdown">
+                            <button class="btn btn-secondary dropdown-toggle" type="button"
+                                id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true"
+                                aria-expanded="false">
+                                <i data-feather="list"></i>
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                <a class="dropdown-item" href="/user/{{$item->id}}/edit">Edit</a>
+                                <a class="dropdown-item" href="" data-toggle="modal"
+                                    data-target="#Modal{{$item->id}}">Delete</a>
+                                @if ($item->satker_id == 28 && $item->face_registered==0)
+                                <a class="dropdown-item" href="/user/{{ $item->id }}/enrollface">Enroll
+                                    Face</a>
+                                @endif
+                            </div>
+                        </div>
 
-                        </td>
-                    </tr>
+                    </td>
+                </tr>
                 @endforeach
             </table>
-  
           </div><!-- card-body -->
         </div><!-- card -->
       </div>
-      
+
     </div><!-- container -->
   </div>
-</div><!-- content -->  
+</div><!-- content -->
 
 <!-- Button trigger modal -->
 {{-- <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
   Launch demo modal
 </button> --}}
-    @foreach ($data as $item) 
+    @foreach ($data as $item)
     <!-- Modal -->
     <div class="modal fade" id="Modal{{$item->id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
       <div class="modal-dialog" role="document">
@@ -108,13 +116,13 @@
     </div>
     @endforeach
 
-    <script>     
- 
+    <script>
+
       $('#tabel').dataTable( {
         // responsive:true
         "drawCallback": function( settings ) {
             feather.replace();
-        
+
     },
       responsive: true,
         language: {
